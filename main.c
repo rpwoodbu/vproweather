@@ -88,6 +88,7 @@ int main(int argc, char *argv[])
 	/* Get command line parms */
 	if (!GetParms(argc, argv)) {
 		printf("vproweather v0.6 18-OCT-2004 written by Joe Jaworski ");
+		printf("\nvproweather v0.6 30-MAR-2011 updated by Richard Woodbury ");
 		printf("\nSee http://www.joejaworski.com/weather/ for latest version and info");
 		printf("\nUsage: vproweather [Options] Device\n");
 		printf("Options:\n");

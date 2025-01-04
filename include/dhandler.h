@@ -39,13 +39,6 @@ extern void PrintTime(char *szData);
 
 extern char* ForecastString(WORD wRule);
 
-/* added for dew point calc  8-30-2006 */
-extern double Gamma( double T, double RH );
-extern double DewPoint( double T, double RH );
-extern double FtoC( double x );
-extern double CtoF( double x );
-extern void HexDump( void *mem, int numBytes, int address, int bytesPerLine );
-
 
 /* graphic data sets- memory pointer offsets */	
 #define GRAPH_START              177
@@ -247,7 +240,7 @@ typedef struct t_RTDATA
 	WORD	wBarometer;		/* 7 Current barometer as (Hg / 1000)			*/
 	WORD	wInsideTemp;	/* 9 Inside Temperature as (DegF / 10)			*/
 	BYTE	yInsideHum;		/* 11 Inside Humidity as percentage				*/
-    short    wOutsideTemp;   /* 12 Outside Temperature as (DegF / 10)        */
+	short	    wOutsideTemp;	/* 12 Outside Temperature as (DegF / 10)	changed from WORD to short - RPW	*/
 	BYTE	yWindSpeed;		/* 14 Wind Speed								*/
 	BYTE	yAvgWindSpeed;	/* 15 10-Minute Average Wind Speed				*/
 	WORD	wWindDir;		/* 16 Wind Direction in degress					*/
@@ -386,7 +379,7 @@ typedef struct t_HLDATA
 	WORD	wRainHiYear;	/* 124 Highest Rain Rate this year				*/
 	
 	BYTE	yExtraLeaf[150];/* 126 Extra/Leaf/Soil Temperatures				*/	
-	BYTE	yOutExtraHums[80];/* 276 Extra outside Humidities - changed name 8-29-2006  RPW    */	
+	BYTE	yOutExtraHums[80];  /* 276 Extra outside Humidities - changed name 8-29-2006  RPW    */	
 	BYTE	ySoilMoist[40];	/* 356 Soil Moisture section					*/	
 	BYTE	yLeafWet[40];	/* 396 Leaf Wetness section						*/
 	WORD	wUnknown;		/* 436 not documented							*/

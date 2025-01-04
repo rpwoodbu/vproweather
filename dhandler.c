@@ -448,7 +448,7 @@ void PrintRTData(void)
 	printf("%s = %.2f\n", _YEAR_RAIN, rcd.wRainYear / 100.0);
 	printf("%s = %d\n", _DAY_ET, rcd.wETDay);
 	printf("%s = %d\n", _MONTH_ET, rcd.wETMonth);
-	printf("%st = %d\n", _XMIT_BATT, rcd.yXmitBatt);
+	printf("%s = %d\n", _XMIT_BATT, rcd.yXmitBatt); /* changed %st to %s */
 	printf("%s = %.1f\n", _BATT_VOLTAGE, ((rcd.wBattLevel * 300)/512)/100.0);
 	printf("%s = %d\n", _FORE_ICON, rcd.yForeIcon);
 	printf("%s = %d\n", _FORE_RULE, rcd.yRule);
@@ -529,6 +529,16 @@ void PrintHLData(void)
 	printf("%s = %d\n", _IN_HUM_LO_MONTH, hld.yInHumLoMonth );
 	printf("%s = %d\n", _IN_HUM_HI_YEAR, hld.yInHumHiYear );
 	printf("%s = %d\n", _IN_HUM_LO_YEAR, hld.yInHumLoYear );
+	
+	/* added for outside H/L hunidites on station 1 August 29, 2006 --- RPW     */
+    printf("%s = %d\n", _HUM_LO_DAY, hld.yOutExtraHums[0]);
+	printf("%s = %d\n", _HUM_HI_DAY, hld.yOutExtraHums[8]);
+	printf("%s = %s\n", _HUM_LO_TIME, TimeConvert(*((short*)&hld.yOutExtraHums[16])));
+	printf("%s = %s\n", _HUM_HI_TIME, TimeConvert(*((short*)&hld.yOutExtraHums[32])));
+	printf("%s = %d\n", _HUM_HI_MONTH, hld.yOutExtraHums[48]);
+	printf("%s = %d\n", _HUM_LO_MONTH, hld.yOutExtraHums[56]);
+	printf("%s = %d\n", _HUM_HI_YEAR, hld.yOutExtraHums[64]);
+	printf("%s = %d\n", _HUM_LO_YEAR, hld.yOutExtraHums[72]);
 	
 	printf("%s = %.1f\n", _TEMP_HI_DAY, ((signed short)hld.wTempHiDay) / 10.0 );
 	printf("%s = %.1f\n", _TEMP_LO_DAY, ((signed short)hld.wTempLoDay) / 10.0 );

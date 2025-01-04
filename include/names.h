@@ -96,7 +96,6 @@
 #define _HUM_LO_MONTH	    "hlOutHumLoMonth"
 #define _HUM_HI_YEAR		"hlOutHumHiYear"
 #define _HUM_LO_YEAR		"hlOutHumLoYear"
-
 #define _TEMP_HI_DAY		"hlOutTempHiDay"
 #define _TEMP_LO_DAY		"hlOutTempLoDay"
 #define _TEMP_HI_TIME		"hlOutTempHiTime"
