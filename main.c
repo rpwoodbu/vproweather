@@ -58,6 +58,7 @@ static BOOL bHTML;						/* html substitution flag */
 static unsigned char yDelay;			/* Read wait time */
 
 static char szSerBuffer[4200];			/* serial read/write buffer */
+static char szSWriteErr[] = "Serial Port Write Error";
 
 
 
@@ -163,7 +164,10 @@ int main(int argc, char *argv[])
 		while(ReadNextChar(fdser, &ch));	/* clear channel and delay */ 
 		while(ReadNextChar(fdser, &ch));	/* clear channel and delay */
 		strcpy(szSerBuffer, "LAMPS 1\n");	/* make Davis cmd string */
-		write(fdser, &szSerBuffer, strlen(szSerBuffer)); /* send it */
+		if(write(fdser, &szSerBuffer, strlen(szSerBuffer)) != strlen(szSerBuffer))
+		{	perror(szSWriteErr);
+			exit(2);
+		}
 		tcdrain(fdser);
 	}
 	
@@ -173,7 +177,10 @@ int main(int argc, char *argv[])
 			printf("Turning Backlite OFF...\n");
 		while(ReadNextChar(fdser, &ch));		/* clear channel and delay */
 		strcpy(szSerBuffer, "LAMPS 0\n");	/* make Davis cmd string */
-		write(fdser, &szSerBuffer, strlen(szSerBuffer)); /* send it */
+		if(write(fdser, &szSerBuffer, strlen(szSerBuffer)) != strlen(szSerBuffer))
+		{	perror(szSWriteErr);
+			exit(2);
+		}
 		tcdrain(fdser);
 	}
 	
@@ -183,7 +190,10 @@ int main(int argc, char *argv[])
 			printf("Getting firmware string...\n");
 		while(ReadNextChar(fdser, &ch));		/* clear channel and delay */
 		strcpy(szSerBuffer, "VER\n");		/* make Davis cmd string */
-		write(fdser, &szSerBuffer, strlen(szSerBuffer)); /* send it */
+		if(write(fdser, &szSerBuffer, strlen(szSerBuffer)) != strlen(szSerBuffer))
+		{	perror(szSWriteErr);
+			exit(2);
+		}
 		tcdrain(fdser);
 		Delay(1, 0L);
 		nCnt = ReadToBuffer(fdser, szSerBuffer, sizeof(szSerBuffer));
@@ -199,7 +209,12 @@ int main(int argc, char *argv[])
 			printf("Getting model number code byte...\n");
 		while(ReadNextChar(fdser, &ch));		/* clear channel and delay */ 
 		strcpy(szSerBuffer, "WRD\022\115\n");	/* make Davis cmd string */
-		write(fdser, &szSerBuffer, strlen(szSerBuffer)); /* send it */
+		if(write(fdser, &szSerBuffer, strlen(szSerBuffer)) != strlen(szSerBuffer))
+		{
+			perror(szSWriteErr);
+			exit(2);
+		}
+
 		tcdrain(fdser);
 		
 		if(!ReadNextChar(fdser, &ch)) {
@@ -233,7 +248,11 @@ int main(int argc, char *argv[])
 			printf("Getting weather station time...\n");
 		while(ReadNextChar(fdser, &ch));	/* clear channel and delay */ 
 		strcpy(szSerBuffer, "GETTIME\n");	/* make Davis cmd string */
-		write(fdser, &szSerBuffer, strlen(szSerBuffer)); /* send it */
+		if(write(fdser, &szSerBuffer, strlen(szSerBuffer)) != strlen(szSerBuffer))
+		{
+			perror(szSWriteErr);
+			exit(2);
+		}
 		nCnt = ReadToBuffer(fdser, szSerBuffer, sizeof(szSerBuffer));
 		if(bVerbose) {
 			printf("Got %d characters...", nCnt);
@@ -263,7 +282,11 @@ int main(int argc, char *argv[])
 			printf("Setting weather station time...\n");
 		while(ReadNextChar(fdser, &ch));	/* clear channel and delay */
 		strcpy(szSerBuffer, "SETTIME\n");	/* make Davis cmd string */
-		write(fdser, &szSerBuffer, strlen(szSerBuffer)); /* send it */
+		if(write(fdser, &szSerBuffer, strlen(szSerBuffer)) != strlen(szSerBuffer))
+		{
+			perror(szSWriteErr);
+			exit(2);
+		}
 		ReadNextChar(fdser, &ch);			/* get ACK */
 		if(ch != 0x06) {
 			fprintf(stderr, "vproweather: Failed to get ACK.\n");
@@ -287,7 +310,11 @@ int main(int argc, char *argv[])
 		szSerBuffer[6] = HIBYTE(i);			/* send MSB first */
 		szSerBuffer[7] = LOBYTE(i);
 		
-		write(fdser, &szSerBuffer, strlen(szSerBuffer)); /* send it */
+		if(write(fdser, &szSerBuffer, strlen(szSerBuffer)) != strlen(szSerBuffer))
+		{
+			perror(szSWriteErr);
+			exit(2);
+		}
 		tcdrain(fdser);
 		Delay(1, 0L);
 		
@@ -309,7 +336,11 @@ int main(int argc, char *argv[])
 
 		while(ReadNextChar(fdser, &ch));		/* clear channel and delay */
 		strcpy(szSerBuffer, "HILOWS\n");		/* make Davis cmd string */
-		write(fdser, &szSerBuffer, strlen(szSerBuffer)); /* send it */
+		if(write(fdser, &szSerBuffer, strlen(szSerBuffer)) != strlen(szSerBuffer))
+		{
+			perror(szSWriteErr);
+			exit(2);
+		}
 		tcdrain(fdser);
 		nCnt = ReadToBuffer(fdser, szSerBuffer, sizeof(szSerBuffer));
 		if(bVerbose) {
@@ -343,7 +374,11 @@ int main(int argc, char *argv[])
 	
 		while(ReadNextChar(fdser, &ch));		/* clear channel and delay */
 		strcpy(szSerBuffer, "GETEE\n");			/* make Davis cmd string */
-		write(fdser, &szSerBuffer, strlen(szSerBuffer)); /* send it */
+		if(write(fdser, &szSerBuffer, strlen(szSerBuffer)) != strlen(szSerBuffer))
+		{
+			perror(szSWriteErr);
+			exit(2);
+		}
 		tcdrain(fdser);
 		nCnt = ReadToBuffer(fdser, szSerBuffer, sizeof(szSerBuffer));
 		if(bVerbose) {
@@ -364,7 +399,7 @@ int main(int argc, char *argv[])
 		else if (bVerbose)
 			printf("CRC verified good on full EEPROM packet.\n");
 		
-		PrintGDData(szSerBuffer);			/* ...and to stdout */
+		PrintGDData((BYTE*)szSerBuffer);			/* ...and to stdout */
 	}	
 
 
@@ -376,7 +411,11 @@ int main(int argc, char *argv[])
 	
 		while(ReadNextChar(fdser, &ch));		/* clear channel and delay */
 		strcpy(szSerBuffer, "LOOP 1\n");		/* make Davis cmd string */
-		write(fdser, &szSerBuffer, strlen(szSerBuffer)); /* send it */
+		if(write(fdser, &szSerBuffer, strlen(szSerBuffer)) != strlen(szSerBuffer))
+		{
+			perror(szSWriteErr);
+			exit(2);
+		}
 		tcdrain(fdser);
 		nCnt = ReadToBuffer(fdser, szSerBuffer, sizeof(szSerBuffer));
 		if(bVerbose) {
@@ -517,7 +556,12 @@ int WakeUp(int nfd)
 	for(i = 0; i < 3; i++)
 	{
 		ch = '\r';
-		write(nfd, &ch, 1);				/* send wake up char */
+		/* send wake up char */
+		if(write(nfd, &ch, 1) != 1)
+		{
+			perror(szSWriteErr);
+			exit(2);
+		}		
 		if(ReadNextChar(nfd, &ch)) 		/* read a char */
 		{
 			if(bVerbose)

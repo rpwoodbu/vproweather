@@ -482,8 +482,11 @@ char* TimeConvert(WORD wTime)
 
 	if(nHours == 0 && bAM)
 		nHours = 12;
-	
-	sprintf(szBuf, "%d:%02d%s", nHours, nMinutes, (bAM?"AM":"PM"));
+	if(nMinutes)
+	    sprintf(szBuf, "%d:%02d%s", nHours, nMinutes, (bAM?"AM":"PM"));
+	else
+	    sprintf(szBuf, "%d%s", nHours, (bAM?"AM":"PM"));
+	    
 	
 	return szBuf;
 }
@@ -590,7 +593,7 @@ void PrintHLData(void)
 	PrintGDData
 	Dumps the graphics sets to stdout.
 ----------------------------------------------------------------------------*/
-void PrintGDData(char * pData)
+void PrintGDData(BYTE * pData)
 {
 	PrintTimeRef();					/* Print reference times */
 
@@ -1164,7 +1167,7 @@ void PrintTimeRef(void)
 {
 	struct tm stm;
 	time_t tt;
-	int i;
+	int i,j;
 	
 	/* 10min reference */
 	printf("%s = ", _TIME_REF_10MIN	);
@@ -1235,14 +1238,15 @@ void PrintTimeRef(void)
 
 	/* months reference */
 	printf("%s = ", _TIME_REF_MONTHS);
-	for(i = 24; i; i--)
+	time(&tt);
+	stm = *localtime(&tt);			/* get time now */
+	
+	for(i = 0; i < 24; i++)
 	{
-		time(&tt);
-		stm = *localtime(&tt);			/* get time now */
-		stm.tm_mon -= i;				/* back by months */
-		tt = mktime(&stm);
-		stm = *localtime(&tt);			/* get time again */
-		switch(stm.tm_mon)
+		j = stm.tm_mon + i;
+		if(j > 11)
+			j %= 12;
+		switch(j)
 		{
 			case 0: printf("JAN"); break;
 			case 1: printf("FEB"); break;
@@ -1258,7 +1262,7 @@ void PrintTimeRef(void)
 			case 11: printf("DEC"); break;
 			default: printf("???"); break;
 		}	
-		if(i > 1)
+		if(i!=23)
 			printf(",");
 	}
 	printf("\n");

@@ -87,6 +87,16 @@
 #define _IN_HUM_LO_MONTH	"hlInHumLoMonth"
 #define _IN_HUM_HI_YEAR		"hlInHumHiYear"
 #define _IN_HUM_LO_YEAR		"hlInHumLoYear"
+/* added for out hum H/L */
+#define _HUM_HI_DAY		    "hlOutHumHiDay"
+#define _HUM_LO_DAY		    "hlOutHumLoDay"
+#define _HUM_HI_TIME		"hlOutHumHiTime"
+#define _HUM_LO_TIME		"hlOutHumLoTime"
+#define _HUM_HI_MONTH	    "hlOutHumHiMonth"
+#define _HUM_LO_MONTH	    "hlOutHumLoMonth"
+#define _HUM_HI_YEAR		"hlOutHumHiYear"
+#define _HUM_LO_YEAR		"hlOutHumLoYear"
+
 #define _TEMP_HI_DAY		"hlOutTempHiDay"
 #define _TEMP_LO_DAY		"hlOutTempLoDay"
 #define _TEMP_HI_TIME		"hlOutTempHiTime"
