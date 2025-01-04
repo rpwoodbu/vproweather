@@ -6,7 +6,7 @@ TARGET = vproweather
 all:	$(TARGET)
 
 $(TARGET): main.o dhandler.o
-	$(CC) $(LDFLAGS) main.o dhandler.o -o $(TARGET)
+	$(CC) main.o dhandler.o $(LDFLAGS) -o $(TARGET)
 
 main.o: main.c include/main.h include/dhandler.h
 	$(CC) $(CFLAGS) -c main.c
