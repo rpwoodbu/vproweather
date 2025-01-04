@@ -1,11 +1,12 @@
 CC = gcc
-CFLAGS = -O2 -Wall -fpack-struct -I/usr/include -I./include 
+CFLAGS = -O2 -Wall -fpack-struct -I/usr/include -I./include
+LDFLAGS = -lm
 
 TARGET = vproweather
 all:	$(TARGET)
 
 $(TARGET): main.o dhandler.o
-	$(CC) main.o dhandler.o -o $(TARGET)
+	$(CC) $(LDFLAGS) main.o dhandler.o -o $(TARGET)
 
 main.o: main.c include/main.h include/dhandler.h
 	$(CC) $(CFLAGS) -c main.c

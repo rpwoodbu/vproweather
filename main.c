@@ -23,7 +23,7 @@
 /*	v0.4 - Fixed problem with string lookup									*/
 /*	v0.5 - Fixed forecast strings. Fix baro trend problem.					*/
 /*	v0.6 - Fix baro trend problem (again). Tweak parm checks.				*/
-/*																			*/
+/*	v0.7 - Added hlOutHum array - RPW   																	*/
 /****************************************************************************/
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 	
 	/* Get command line parms */
 	if (!GetParms(argc, argv)) {
-		printf("vproweather v0.6 18-OCT-2004 written by Joe Jaworski ");
+		printf("vproweather v0.9 17-JAN-2008 written by Joe Jaworski/RPW ");
 		printf("\nSee http://www.joejaworski.com/weather/ for latest version and info");
 		printf("\nUsage: vproweather [Options] Device\n");
 		printf("Options:\n");

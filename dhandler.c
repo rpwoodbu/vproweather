@@ -12,7 +12,10 @@
 /* This software is provided as-is, without any expressed or implied		*/
 /* warranties, including, without limitation, the implied warranties of		*/
 /* merchantibility and fitness for any particular purpose.					*/
-/*																			*/
+/*	                                                                        */
+/* Added functions and printf for dew point calc RPW 8-30-2006              */
+/* Removed 't' from %s in printf for yXmitBatt 9-7-2006                     */
+/* Fixed precision in printf for dew point 9/-17-06                         */
 /*																			*/
 /* dhandler.c - data handler functions										*/
 /* tabs every 4 places														*/
@@ -22,8 +25,11 @@
 #include <stdlib.h>
 #include <time.h>
 #include <memory.h>
+#include <math.h>
 #include "include/dhandler.h"
 #include "include/names.h"
+
+
 
 
 /* CCITT table of CRC values */
@@ -278,6 +284,32 @@ static void PrintTempSet25(BYTE *pData, int nOffset, BYTE yNext, int nSub);
 static void PrintDateSet(BYTE *pData, int nOffset, BYTE yNext, int nSetSize);
 static void PrintTimeRef(void);
 
+// Calculate gamma
+
+double Gamma( double T, double RH ) 
+    {
+    return( ((17.27*T)/(237.7 + T) )+log( RH ) );
+    }
+
+// Calculate Dewpoint
+
+double DewPoint( double T, double RH )
+    {
+    return( ( 237.7 * Gamma( T, RH ))/(17.27-Gamma( T, RH ) ) ) ;
+    }
+
+// Convvert fahrenheit to Celcius
+
+double FtoC( double x )
+    {
+    return( (x-32) * (5./9.) );
+    }
+
+// convert Celcius to fahrenheit
+double CtoF( double x )
+    {
+    return( (x * (9./5.)) + 32 );
+    } // CtoF
 
 
 /*--------------------------------------------------------------------------
@@ -340,6 +372,7 @@ void PrintTime(char *szData)
 void GetRTData(char *szData)
 {
 	memcpy((char*)&rcd, szData, sizeof(RTDATA));
+    // rcd.wOutsideTemp = -7.0;
 }	
 
 
@@ -360,11 +393,13 @@ void GetHLData(char *szData)
 	PrintRTData
 	Dumps the real time weather data to stdout.
 ----------------------------------------------------------------------------*/
+
 void PrintRTData(void)
 {
 	int i;
 	
 	/* 3-hour rolling baro trend */
+    // HexDump( &rcd, sizeof( rcd ), 0, 16 );
 	i = rcd.cP;
 	printf("%s = ", _BARO_TREND);
 	switch(i) {
@@ -448,13 +483,15 @@ void PrintRTData(void)
 	printf("%s = %.2f\n", _YEAR_RAIN, rcd.wRainYear / 100.0);
 	printf("%s = %d\n", _DAY_ET, rcd.wETDay);
 	printf("%s = %d\n", _MONTH_ET, rcd.wETMonth);
-	printf("%st = %d\n", _XMIT_BATT, rcd.yXmitBatt);
+	printf("%s = %d\n", _XMIT_BATT, rcd.yXmitBatt);
 	printf("%s = %.1f\n", _BATT_VOLTAGE, ((rcd.wBattLevel * 300)/512)/100.0);
 	printf("%s = %d\n", _FORE_ICON, rcd.yForeIcon);
 	printf("%s = %d\n", _FORE_RULE, rcd.yRule);
 	printf("%s = %s\n", _FORE_STRING, ForecastString(rcd.yRule));
 	printf("%s = %s\n", _SUNRISE, TimeConvert(rcd.wSunrise));
 	printf("%s = %s\n", _SUNSET, TimeConvert(rcd.wSunset));
+    printf( "rtDewPoint = %.1f\n", 
+            CtoF( DewPoint( FtoC( (double) rcd.wOutsideTemp / 10.0 ) , (double) rcd.yOutsideHum / 100 ) ) );
 }
 
 
@@ -483,7 +520,7 @@ char* TimeConvert(WORD wTime)
 	if(nHours == 0 && bAM)
 		nHours = 12;
 	
-	sprintf(szBuf, "%d:%02d%s", nHours, nMinutes, (bAM?"AM":"PM"));
+	sprintf(szBuf, "%d:%02d%s", nHours, nMinutes, (bAM?"am":"pm"));
 	
 	return szBuf;
 }
@@ -526,6 +563,16 @@ void PrintHLData(void)
 	printf("%s = %d\n", _IN_HUM_LO_MONTH, hld.yInHumLoMonth );
 	printf("%s = %d\n", _IN_HUM_HI_YEAR, hld.yInHumHiYear );
 	printf("%s = %d\n", _IN_HUM_LO_YEAR, hld.yInHumLoYear );
+
+    /* added for outside H/L hunidites on station 1 August 29, 2006 --- RPW     */
+    printf("%s = %d\n", _HUM_LO_DAY, hld.yOutExtraHums[0]);
+	printf("%s = %d\n", _HUM_HI_DAY, hld.yOutExtraHums[8]);
+	printf("%s = %s\n", _HUM_LO_TIME, TimeConvert(*((short*)&hld.yOutExtraHums[16])));
+	printf("%s = %s\n", _HUM_HI_TIME, TimeConvert(*((short*)&hld.yOutExtraHums[32])));
+	printf("%s = %d\n", _HUM_HI_MONTH, hld.yOutExtraHums[48]);
+	printf("%s = %d\n", _HUM_LO_MONTH, hld.yOutExtraHums[56]);
+	printf("%s = %d\n", _HUM_HI_YEAR, hld.yOutExtraHums[64]);
+	printf("%s = %d\n", _HUM_LO_YEAR, hld.yOutExtraHums[72]);
 	
 	printf("%s = %.1f\n", _TEMP_HI_DAY, ((signed short)hld.wTempHiDay) / 10.0 );
 	printf("%s = %.1f\n", _TEMP_LO_DAY, ((signed short)hld.wTempLoDay) / 10.0 );
@@ -1307,3 +1354,52 @@ char* ForecastString(WORD wRule)
 	return ptr;	
 	
 }
+
+void HexDump( void *mem, int numBytes, int address, int bytesPerLine )
+// Display memory as a hexidecimal display
+
+// HexDump( &struct, sizeof( struct ), 0, 16 );
+
+	{
+   char *cur;
+   int i;
+   char ascii[256];
+   char c;
+	// int l;
+
+   cur = (char *) mem;
+   memset( ascii, 0, sizeof( ascii ) );
+   for( i=0 ; i<numBytes ; i++, cur++ )
+      {
+      if ( strlen( ascii ) == 0 )
+         printf( "%06X ", address + i );
+      if ( ( *cur < ' ' ) || ( *cur > '~' ) )
+         c = '.';
+      else
+         c = *cur;
+
+      printf( "%02X", (int) *cur & 0xff );
+      ascii[strlen( ascii )] = c;
+      if ( ( strlen( ascii ) % 4 ) == 0 )
+         printf( " " );
+
+      if ( strlen( ascii ) >= bytesPerLine )
+         {
+         printf( "%s\n", ascii );
+         memset( ascii, 0, sizeof( ascii ) );
+         } // if
+      } // for
+
+   if ( strlen( ascii ) )
+      {
+      while( strlen( ascii ) < bytesPerLine )
+         {
+         ascii[strlen( ascii )] = ' ';
+         printf( "  " );
+         if ( ( strlen( ascii ) % 4 ) == 0 )
+            printf( " " );
+         } // while
+      printf( "%s\n", ascii );
+      } // if
+   } // HexDump
+
