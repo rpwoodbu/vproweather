@@ -1,0 +1,12 @@
+cc_binary(
+    name = "vproweather",
+    srcs = [
+        "dhandler.c",
+        "main.c",
+        "include/dhandler.h",
+        "include/main.h",
+        "include/names.h",
+    ],
+    copts = ["-fpack-struct"],
+    features = ["fully_static_link"],
+)
