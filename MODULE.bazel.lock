@@ -241,7 +241,7 @@
     "@@toolchains_llvm+//toolchain/extensions:llvm.bzl%llvm": {
       "general": {
         "bzlTransitiveDigest": "2UD8x0LHy2fgOvBmCL8R0HPa9/omkySg1/dsFBzYcH8=",
-        "usagesDigest": "jFlDrZj1CYvmI8kPfcSLWIpGrTNpdWYuiYlEabbkmGg=",
+        "usagesDigest": "798D8kSUkLUupAKY7hMebf26PTrh73nPKZsY4UvbUQ4=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -291,7 +291,8 @@
               "unfiltered_compile_flags": {},
               "toolchain_roots": {},
               "sysroot": {
-                "": "'@@+_repo_rules+sysroot//:sysroot'"
+                "linux-x86_64": "'@@+_repo_rules+sysroot_linux_x86_64//:sysroot_linux_x86_64'",
+                "linux-aarch64": "'@@+_repo_rules+sysroot_rpi_aarch64//:sysroot_rpi_aarch64'"
               }
             }
           }
